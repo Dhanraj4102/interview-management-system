@@ -1,5 +1,7 @@
 package interview_management_system.service;
 
+import interview_management_system.repository.CandidateRepository;
+import interview_management_system.entity.Candidate;
 import interview_management_system.dto.LoginRequest;
 import interview_management_system.dto.LoginResponse;
 import interview_management_system.dto.RegisterRequest;
@@ -11,7 +13,6 @@ import interview_management_system.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -19,6 +20,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final CandidateRepository candidateRepository;
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final JwtService jwtService;
@@ -42,6 +44,14 @@ public class UserService {
                 .build();
 
         userRepository.save(user);
+
+        Candidate candidate = Candidate.builder()
+                .user(user)
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        candidateRepository.save(candidate);
 
         return "Registration Successful";
     }
